@@ -17,7 +17,7 @@ def silence_based_conversion():
 	retry = open("retry.txt","w+")
 	print("Audio fetched and preparing to split....\nSplitting Chunks.....")
 	print("This may take a while.....")
-	chunks = split_on_silence(audio, min_silence_len = 750, silence_thresh = -35)
+	chunks = split_on_silence(audio, min_silence_len = 750, silence_thresh = -30)
 	print("Audio chunks successfully splitted .....")
 	
 	try:
@@ -25,7 +25,7 @@ def silence_based_conversion():
 	except(FileExistsError):
 		pass
 	
-	print("audio_chunks directory created and directory changed to audio_chunks .....")
+	print("audio_chunks directory created and home directory changed to audio_chunks .....")
 	os.chdir('audio_chunks')
 
 	i = 0
@@ -33,7 +33,7 @@ def silence_based_conversion():
 
 		chunk_silent = AudioSegment.silent(duration = 100)	
 		audio_chunk = chunk_silent + chunk + chunk_silent
-		audio_chunk = audio_chunk._spawn(audio_chunk.raw_data, overrides={"frame_rate": int(audio_chunk.frame_rate * 0.60)})
+		#audio_chunk = audio_chunk._spawn(audio_chunk.raw_data, overrides={"frame_rate": int(audio_chunk.frame_rate * 0.60)})
 		print("Saving chunk{0}.wav".format(i))
 		audio_chunk.export("./chunk{0}.wav".format(i), bitrate = '192k', format = "wav")
 		filename = 'chunk' + str(i)+ '.wav'
@@ -68,8 +68,6 @@ def silence_based_conversion():
 	print("Unrecogized audio chunks is stored at location /home/siva/Translator/unrecognized.txt")
 	print("Retry required audio chunks is stored at location /home/siva/Translator/retry.txt")
 	print("Converting text to another language....")
-	#command = "python3 languageTranslator.py"
-	#subprocess.call(command, shell=True)
-	#languageTranslator.translateText()
 
 silence_based_conversion()
+lt.translateText()
