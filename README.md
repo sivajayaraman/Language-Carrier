@@ -16,8 +16,11 @@ Second Push :
       <br>10. Audio developed from text in translated_audio directory.
       <br>11. UI Development using Tkinter.
       <br>12. Unrecognized files handling.
+      <br>13. Program Files reduced to two,merging the required.
 <br>Tasks to be done:
       <br>1. Integration.
       <br>2. Retry files handling.
       <br>3. Male/Female versions for the audio files should be added.
-      <br>4. UI betterment	
+      <br>4. UI enhancements	
+      <br>5. Exception handling for all cases
+      <br>6. NLP Module building
