@@ -24,3 +24,4 @@ Second Push :
       <br>4. UI enhancements	
       <br>5. Exception handling for all cases
       <br>6. NLP Module building
+      <br>7. File Input Handling
