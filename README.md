@@ -15,8 +15,9 @@ Second Push :
       <br>9.  Text converted to other languages.
       <br>10. Audio developed from text in translated_audio directory.
       <br>11. UI Development using Tkinter.
-      <br>12. Unrecognized files handling.
+      <br>12. Unsupported files handling.
       <br>13. Program Files reduced to two,merging the required.
+      <br>14. File Input Handling
 <br>Tasks to be done:
       <br>1. Integration.
       <br>2. Retry files handling.
@@ -24,4 +25,6 @@ Second Push :
       <br>4. UI enhancements	
       <br>5. Exception handling for all cases
       <br>6. NLP Module building
-      <br>7. File Input Handling
+      <br>7. Convert Hardcoded paths to automated paths
+      <br>8. Add explaining comments in Program file
+      <br>9. Unrecognized files handling

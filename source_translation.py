@@ -1,13 +1,14 @@
 import subprocess
 import os
-import speech_recognition as sr
+import glob
+import speech_recognition
+import tkinter
+import time
+import googletrans
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
 from tkinter import Label
 from tkinter import messagebox
-import tkinter
-import time
-import googletrans
 from googletrans import Translator
 from googletrans import LANGUAGES
 from gtts import gTTS
@@ -24,17 +25,19 @@ def clearFiles():
 	open("translatedText.txt","w").close()
 
 def textToOtherLanguage():
-	updateDisplayLabel("Audio Development Initiated",3)
+	print("Audio Development Initiated ---" + time.ctime() )
+	updateDisplayLabel("Audio Development Initiated",2)
 	try:
 	    os.mkdir('translated_audio')
 	except(FileExistsError):
 	    pass
-	updateDisplayLabel("Reading the translated text file....",3)
+	print("Reading the translated text file....")
+	updateDisplayLabel("Reading the translated text file....",1.5)
 	translatedText = open("translatedText.txt","r")
 	print("translated_audio directory created and home directory changed to translated_audio directory .....")
 	os.chdir('translated_audio')
 	print("Reading translated text from translatedText.txt")
-
+	audioMerge = AudioSegment.silent(1000)
 	data = translatedText.readlines()
 	i = 1
 	for line in data:
@@ -43,21 +46,34 @@ def textToOtherLanguage():
 		audio = gTTS(text=line, lang="ta", slow=False) 
 		filename = "translated_" + str(i) + ".mp3"
 		audio.save(filename) 
-		updateDisplayLabel("Translated audio saved as " + filename + "---" + time.ctime(),3)
+		updateDisplayLabel("Translated audio saved as " + filename + "---" + time.ctime(),1.5)
 		i = i + 1
-	updateDisplayLabel("Audio chunks developed succesfully ---" + time.ctime(),5)
-	updateDisplayLabel("Audio translated and stored in location\n /home/siva/Translator/translated_audio",5)
-	print("Audio translated and stored in location /home/siva/Translator/translated_audio")    
+	translatedText.close()
+	updateDisplayLabel("Audio chunks developed succesfully ---" + time.ctime(),1.5)
+	updateDisplayLabel("Audio translated and stored in location\n /home/siva/Translator/translated_audio",1.5)
+	path = os.getcwd()
+	updateDisplayLabel("Audio Files Merging Initiated",1.5)
+	i = 1
+	for filename in glob.glob(os.path.join(path,"*.mp3")):
+	    updateDisplayLabel("Merging Audio File translated_" +str(i) + ".mp3 ---" + time.ctime(),1.5)
+	    print("Merging Audio File translated_" +str(i) + ".mp3 ---" + time.ctime())
+	    audio = AudioSegment.from_mp3(filename)
+	    audioMerge = audioMerge + audio
+	    i = i + 1    
+	updateDisplayLabel("Audio files merged and stored at location \n" + os.getcwd() + "---" + time.ctime(),1.5)    
 	os.chdir('..')
+	path = os.getcwd()
+	audioMerge.export(path+"/translatedAudio.mp3", format='mp3')
+	print("Audio translated and stored in location " + path )
 	tkinter.messagebox.showinfo("Audio Development Success","Audio successfully developed from the text")
 	root.destroy()
 
 def translateText():
-	updateDisplayLabel("Translation Initiated",3)
+	updateDisplayLabel("Translation Initiated",1.5)
 	translator = Translator()
 	languages = googletrans.LANGUAGES
 	translatedTextFile = open("translatedText.txt","+w")
-	updateDisplayLabel("Reading Recognized Text from file",3)
+	updateDisplayLabel("Reading Recognized Text from file",1.5)
 	print("Reading Recognized Text from file....")
 	recognized = open("recognized.txt","r")
 	data = recognized.readlines()
@@ -67,17 +83,19 @@ def translateText():
 		sourceLanguage = detect.lang
 		sourceLanguage = languages.__getitem__(sourceLanguage)
 		updateDisplayLabel("Source Language is "+sourceLanguage,1)
-		updateDisplayLabel("Tranlating line " + str(i) +"---"+ time.ctime(),2)
+		updateDisplayLabel("Tranlating line " + str(i) +"---"+ time.ctime(),1.5)
+		print("Tranlating line " + str(i) +"---"+ time.ctime())
 		translatedData = translator.translate(line.strip(), src=detect.lang,dest='ta')
 		data = translatedData.text
 		translatedTextFile.write(data+"\n")
-		updateDisplayLabel("Line translated ---" + time.ctime(),2)
-		i = i +1
-	updateDisplayLabel("Translation Completed",3)
+		updateDisplayLabel("Line translated ---" + time.ctime(),1.5)
+		print("Line translated ---" + time.ctime())
+		i = i + 1
+	updateDisplayLabel("Translation Completed",1.5)
 	print("Done Translating....")
-	updateDisplayLabel("Translated text file is stored at location\n /home/siva/Translator/translatedText.txt",5)
+	updateDisplayLabel("Translated text file is stored at location\n /home/siva/Translator/translatedText.txt",1.5)
 	tkinter.messagebox.showinfo("Translation Success","Text translated successfully")
-	updateDisplayLabel("Initiating Audio Conversion",3)
+	updateDisplayLabel("Initiating Audio Conversion",1.5)
 	print("Translated text file is stored at location /home/siva/Translator/translatedText.txt ")
 	root.destroy()
 
@@ -113,15 +131,15 @@ def silence_based_conversion(displayLabel):
 		root.update()
 		chunk_silent = AudioSegment.silent(duration = 100)	
 		audio_chunk = chunk_silent + chunk + chunk_silent
-		audio_chunk = audio_chunk._spawn(audio_chunk.raw_data, overrides={"frame_rate": int(audio_chunk.frame_rate * 0.90)})
+		#audio_chunk = audio_chunk._spawn(audio_chunk.raw_data, overrides={"frame_rate": int(audio_chunk.frame_rate * 0.90)})
 		print("Saving chunk{0}.wav".format(i))
 		audio_chunk.export("./chunk{0}.wav".format(i), bitrate = '192k', format = "wav")
 		filename = 'chunk' + str(i)+ '.wav'
 		print("Processing chunk " + str(i))
 		file = filename
-		r = sr.Recognizer()
+		r = speech_recognition.Recognizer()
 
-		with sr.AudioFile(file) as source:
+		with speech_recognition.AudioFile(file) as source:
 			r.adjust_for_ambient_noise(source)
 			audio_listened = r.listen(source)
 
@@ -129,12 +147,12 @@ def silence_based_conversion(displayLabel):
 			rec = r.recognize_google(audio_listened)
 			recognized.write( rec + ".\n" )
 		
-		except sr.UnknownValueError:
+		except speech_recognition.UnknownValueError:
 			print("Could not understand audio")
 			print("Storing audio chunk as unconvertible chunk")
 			unrecognized.write(filename + "\n")
 
-		except sr.RequestError:
+		except speech_recognition.RequestError:
 			print("Connectivity Failure!")
 			print("Loading audio chunk in failed chunks for retrying")
 			retry.write(filename + "\n")
