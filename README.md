@@ -1,11 +1,11 @@
 # Language-Carrier
 
-Second Push : 
+Fourth Push : 
   Tasks Done so far:
-      <br>1. Video/Audio to .wav form converted using ffmpeg in videoToAudio.py file.
+      <br>1. Video/Audio to .wav form converted using ffmpeg in source_base_conversion.py file.
         <br>1.1 Basic Exceptions such as File not found handled.
         <br>1.2 Other audio conversion exceptions handled.
-      <br>2.  From this file, audio.wav is created from the source and the file, audioToText.py is called.
+      <br>2.  From this file, audio.wav is created from the source and the file, source_translation.py is called.
       <br>3.  silenceBasedConversion method is invoked. The audio source path is hardcoded.
       <br>4.  Necessary text files are created to store results.
       <br>5.  The audio.wav file is broken into smaller chunks, so that, it will be easy for the audio to be converted.
@@ -18,13 +18,16 @@ Second Push :
       <br>12. Unsupported files handling.
       <br>13. Program Files reduced to two,merging the required.
       <br>14. File Input Handling
+      <br>15. Hardcoded paths automated.
+      <br>16. Progressbar added
+      <br>17. All case Exceptions handled 
 <br>Tasks to be done:
       <br>1. Integration.
       <br>2. Retry files handling.
       <br>3. Male/Female versions for the audio files should be added.
-      <br>4. UI enhancements	
-      <br>5. Exception handling for all cases
-      <br>6. NLP Module building
-      <br>7. Convert Hardcoded paths to automated paths
-      <br>8. Add explaining comments in Program file
-      <br>9. Unrecognized files handling
+      <br>4. UI enhancements
+      <br>5. NLP Module building
+      <br>6. Add explaining comments in Program file
+      <br>7. Unrecognized files handling
+      <br>8. Code Standardization
+      <br>9. Progress bar and loop handling
