@@ -1,6 +1,6 @@
 # Language-Carrier
 
-Fourth Push : 
+Fifth Push : 
   Tasks Done so far:
       <br>1. Video/Audio to .wav form converted using ffmpeg in source_base_conversion.py file.
         <br>1.1 Basic Exceptions such as File not found handled.
@@ -20,7 +20,8 @@ Fourth Push :
       <br>14. File Input Handling
       <br>15. Hardcoded paths automated.
       <br>16. Progressbar added
-      <br>17. All case Exceptions handled 
+      <br>17. All case Exceptions handled
+      <br>18. Progress bar and loop handling 
 <br>Tasks to be done:
       <br>1. Integration.
       <br>2. Retry files handling.
@@ -30,4 +31,4 @@ Fourth Push :
       <br>6. Add explaining comments in Program file
       <br>7. Unrecognized files handling
       <br>8. Code Standardization
-      <br>9. Progress bar and loop handling
+      <br>9. Preprocessing for Noises

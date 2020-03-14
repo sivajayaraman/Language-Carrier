@@ -15,7 +15,7 @@ from gtts import gTTS
 
 def updateDisplayLabel(displayString,sleepTime):
 	try:
-		label.config(font=("Courier",30))
+		label.config(font=("Courier",20))
 		displayLabel.set(displayString)
 		root.update()
 		root.update_idletasks()
@@ -48,19 +48,23 @@ def textToOtherLanguage():
 			os.mkdir('translated_audio')
 		except(FileExistsError):
 			pass
-		progress['value'] = 20
 		print("Reading the translated text file....")
 		updateDisplayLabel("Reading the translated text file....",1.5)
 		translatedText = open("translatedText.txt","r")
-		progress['value'] = 25
+		progress['value'] = 12
 		print("translated_audio directory created and home directory changed to translated_audio directory .....")
 		updateDisplayLabel("translated_audio directory created and\n home directory changed to translated_audio directory",1.5)
 		os.chdir('translated_audio')
-		progress['value'] = 50
+		progress['value'] = 15
 		print("Reading translated text from translatedText.txt")
 		updateDisplayLabel("Reading translated text from translatedText.txt",1)
 		audioMerge = AudioSegment.silent(500)
 		data = translatedText.readlines()
+		size = len(data)
+		progressValue = 15
+		increment = int(size/35)
+		increment = int(increment)
+		print (increment)
 		i = 1
 		for line in data:
 			updateDisplayLabel("Developing audio for line " + str(i) + "\n--- "+ time.ctime(),0)
@@ -70,16 +74,23 @@ def textToOtherLanguage():
 			audio.save(filename) 
 			updateDisplayLabel("Translated audio saved as " + filename + "\n--- " + time.ctime(),1.5)
 			i = i + 1
+			progressValue = progressValue + increment
+			progress['value'] = progressValue
+			root.update_idletasks()
 		translatedText.close()
 		path = os.getcwd()
-		progress['value'] = 60
+		progress['value'] = 50
 		print("Audio chunks developed succesfully --- " + time.ctime())
 		updateDisplayLabel("Audio chunks developed succesfully --- " + time.ctime(),1.5)
 		print("Audio translated and stored in location\n" + path + "/translated_audio")
 		updateDisplayLabel("Audio translated and stored in location\n" + path + "/translated_audio",1.5)
 		print("Audio Files Merging Initiated")
-		progress['value'] = 80
 		updateDisplayLabel("Audio Files Merging Initiated",1.5)
+		size = i - 1
+		progressValue = 50
+		increment = size/50
+		increment = int(increment)
+		print(increment)
 		i = 1
 		for filename in glob.glob(os.path.join(path,"*.mp3")):
 			updateDisplayLabel("Merging Audio File translated_" +str(i) + ".mp3 \n--- " + time.ctime(),1)
@@ -87,6 +98,9 @@ def textToOtherLanguage():
 			audio = AudioSegment.from_mp3(filename)
 			audioMerge = audioMerge + audio
 			i = i + 1    
+			progressValue = progressValue + increment
+			progress['value'] = progressValue
+			root.update_idletasks()
 		print("Audio files merged and stored at location \n" + os.getcwd() + " --- " + time.ctime())
 		updateDisplayLabel("Audio files merged and stored at location \n" + os.getcwd() + " --- " + time.ctime(),1)    
 		os.chdir('..')
@@ -102,7 +116,7 @@ def textToOtherLanguage():
 			root.destroy()
 		except:
 			pass	
-		tkinter.messagebox.showerror("Error","Unexpected error while developing audio. Please try again!")	
+		tkinter.messagebox.showerror("Error","Unexpected error while developing audio. Please try again!")
 
 def translateText():
 	try:
@@ -121,6 +135,10 @@ def translateText():
 		print("Reading Recognized Text from file....")
 		recognized = open("recognized.txt","r")
 		data = recognized.readlines()
+		size = len(data)
+		progressValue = 20
+		increment = 70/size
+		increment = int(increment)
 		i = 1
 		for line in data:
 			updateDisplayLabel("Translating line " + str(i) +" --- "+ time.ctime(),1.5)
@@ -131,11 +149,13 @@ def translateText():
 				translatedTextFile.write(data+"\n")
 				updateDisplayLabel("Line translated --- " + time.ctime(),1.5)
 			print("Line translated ---" + time.ctime())
+			progressValue = progressValue + increment
+			progress['value'] = progressValue
 			i = i + 1
-		progress['value'] = 50
+		progress['value'] = 90
 		updateDisplayLabel("Translation Completed",1.5)
 		print("Done Translating....")
-		progress['value'] = 80
+		progress['value'] = 95
 		updateDisplayLabel("Translated text file is stored at location\n" + path + "/translatedText.txt",1.5)
 		tkinter.messagebox.showinfo("Translation Success","Text translated successfully")
 		progress['value'] = 100
@@ -172,19 +192,19 @@ def silence_based_conversion():
 		updateDisplayLabel("Splitting the Audio into chunks \n This may take a while...",1.5)
 		chunks = split_on_silence(audio, min_silence_len = 750, silence_thresh = -30)
 		print("Audio chunks successfully splitted .....")
-		progress['value'] = 40
 		updateDisplayLabel("Audio chunks successfully splitted", 1.5)
-	
+		size = len(chunks)
+		progressValue = 20
+		increment = 80/size
+		increment = int(increment)
 		try:
 			os.mkdir('audio_chunks')
 		except(FileExistsError):
 			pass
 		
-		progress['value'] = 50
 		print("audio_chunks directory created and home directory changed to audio_chunks .....")
 		updateDisplayLabel("audio_chunks directory created and\n home directory changed to audio_chunks",1)
 		os.chdir('audio_chunks')
-
 		i = 0
 		for chunk in chunks:
 			root.update()
@@ -218,14 +238,21 @@ def silence_based_conversion():
 				print("Loading audio chunk in failed chunks for retrying")
 				retry.write(filename + "\n")
 
+			except:
+				pass
+			progressValue = progressValue + increment
+			progress['value'] = progressValue
+			root.update_idletasks()
 			i += 1
 		recognized.close()
 		unrecognized.close()
-		retry.close()	
-		progress['value'] = 80
-		updateDisplayLabel("Total number of chunks processed : " + str(i),1.5)
+		retry.close()
+		updateDisplayLabel("Total number of chunks processed : " + str(i),1)
+		print("Recognized text from audio file is stored at location " + path + "/recognized.txt")
 		updateDisplayLabel("Recognized text from audio file is stored at location\n" + path + "/recognized.txt",1.5)
+		print("Unrecognized audio chunks is stored at location " + path + "/unrecognized.txt")
 		updateDisplayLabel("Unrecognized audio chunks is stored at location\n " + path + "/unrecognized.txt",1.5)
+		print("Retry required audio chunks is stored at location " + path + "/retry.txt")
 		updateDisplayLabel("Retry required audio chunks is stored at location\n " + path + "/retry.txt",1.5)
 		progress['value'] = 100
 		root.update_idletasks()
@@ -233,11 +260,7 @@ def silence_based_conversion():
 		print("Total number of chunks processed : " + str(i) )
 		os.chdir('..')
 		print("Returned to home directory.....")
-		print("Recognized text from audio file is stored at location " + path + "/recognized.txt")
-		print("Unrecognized audio chunks is stored at location " + path + "/unrecognized.txt")
-		print("Retry required audio chunks is stored at location " + path + "/retry.txt")
-		print("Converting text to another language....")
-		updateDisplayLabel("Initiating Language Translation....",2)
+		updateDisplayLabel("Initiating Language Translation....",1.5)
 		root.destroy()
 	except:
 		try:
@@ -257,7 +280,7 @@ try:
 	spaceHolder = tkinter.Label(root)
 	spaceHolder.config(height = 10, width = 20)
 	spaceHolder.pack()
-	progress = tkinter.ttk.Progressbar(root, orient = tkinter.HORIZONTAL, length = 300, mode = "determinate")
+	progress = tkinter.ttk.Progressbar(root, orient = tkinter.HORIZONTAL, length = 800, mode = "determinate")
 	button = tkinter.Button(root,text  = "Proceed", command = lambda: silence_based_conversion())
 	button.pack()
 	cancel = tkinter.Button(root,text = "Cancel", command = lambda: root.destroy())
@@ -275,7 +298,7 @@ try:
 	spaceHolder = tkinter.Label(root)
 	spaceHolder.config(height = 10, width = 20)
 	spaceHolder.pack()
-	progress = tkinter.ttk.Progressbar(root, orient = tkinter.HORIZONTAL, length = 300, mode = "determinate")
+	progress = tkinter.ttk.Progressbar(root, orient = tkinter.HORIZONTAL, length = 800, mode = "determinate")
 	button = tkinter.Button(root,text = "Translate Text", command = lambda: translateText())
 	button.pack()
 	cancel = tkinter.Button(root,text = "Cancel", command = lambda: root.destroy())
@@ -293,7 +316,7 @@ try:
 	spaceHolder = tkinter.Label(root)
 	spaceHolder.config(height = 10, width = 20)
 	spaceHolder.pack()
-	progress = tkinter.ttk.Progressbar(root, orient = tkinter.HORIZONTAL, length = 300, mode = "determinate")
+	progress = tkinter.ttk.Progressbar(root, orient = tkinter.HORIZONTAL, length = 800, mode = "determinate")
 	button = tkinter.Button(root,text = "Develop Audio from Text", command = lambda: textToOtherLanguage())
 	button.pack()
 	cancel = tkinter.Button(root,text = "Cancel", command = lambda: root.destroy())
