@@ -64,7 +64,6 @@ def textToOtherLanguage():
 		progressValue = 15
 		increment = int(size/35)
 		increment = int(increment)
-		print (increment)
 		i = 1
 		for line in data:
 			updateDisplayLabel("Developing audio for line " + str(i) + "\n--- "+ time.ctime(),0)
@@ -90,7 +89,6 @@ def textToOtherLanguage():
 		progressValue = 50
 		increment = size/50
 		increment = int(increment)
-		print(increment)
 		i = 1
 		for filename in glob.glob(os.path.join(path,"*.mp3")):
 			updateDisplayLabel("Merging Audio File translated_" +str(i) + ".mp3 \n--- " + time.ctime(),1)
@@ -171,6 +169,8 @@ def translateText():
 
 def silence_based_conversion():	
 	try:
+		retryFile = False
+		unrecognizedFile = False
 		button.pack_forget()
 		cancel.pack_forget()
 		progress.pack()
@@ -229,21 +229,37 @@ def silence_based_conversion():
 				recognized.write( rec + ".\n" )
 			
 			except speech_recognition.UnknownValueError:
+				unrecognizedFile = True
 				print("Could not understand audio")
 				print("Storing audio chunk as unconvertible chunk")
-				unrecognized.write(filename + "\n")
+				audio_chunk = audio_chunk._spawn(audio_chunk.raw_data, overrides={"frame_rate": int(audio_chunk.frame_rate * 0.90)})
+				with speech_recognition.AudioFile(file) as source:
+					r.adjust_for_ambient_noise(source)
+					audio_listened = r.listen(source)
+				try:
+					rec = r.recognize_google_cloud(audio_listened)
+					recognized.write( rec + ".\n")
+				except:
+					unrecognized.write(filename + "\n")
+					pass
 
 			except speech_recognition.RequestError:
+				retryFile = True
 				print("Connectivity Failure!")
 				print("Loading audio chunk in failed chunks for retrying")
-				retry.write(filename + "\n")
-
-			except:
-				pass
+				with speech_recognition.AudioFile(file) as source:
+					r.adjust_for_ambient_noise(source)
+					audio_listened = r.listen(source)
+				try:
+					rec = r.recognize_google_cloud(audio_listened)
+					recognized.write( rec + ".\n")
+				except:
+					retry.write(filename + "\n")
+					pass
 			progressValue = progressValue + increment
 			progress['value'] = progressValue
 			root.update_idletasks()
-			i += 1
+			i = i + 1
 		recognized.close()
 		unrecognized.close()
 		retry.close()
@@ -260,6 +276,14 @@ def silence_based_conversion():
 		print("Total number of chunks processed : " + str(i) )
 		os.chdir('..')
 		print("Returned to home directory.....")
+		if unrecognizedFile == True:
+			response = tkinter.messagebox.askyesno("Try Unrecognized Files","Do you want to retry to recognize unrecognized files?")
+			if response == True:
+				tkinter.messagebox.showinfo("Unrecognized FIle Information","Unrecognized file has been retried already! If results arent sattisfactory, Sorry!")
+		if retryFile == True:
+			response = tkinter.messagebox.askyesno("Retry Files","Do you want to recognize connectivity failed files?")
+			if response == True:
+				tkinter.messagebox.showinfo("Unrecognized FIle Information","Connectivity failed file has been retried already! If results arent sattisfactory, Sorry!")
 		updateDisplayLabel("Initiating Language Translation....",1.5)
 		root.destroy()
 	except:
