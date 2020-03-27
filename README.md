@@ -1,6 +1,6 @@
 # Language-Carrier
 
-Sixth Push : 
+Seventh Push : 
   Tasks Done so far:
       <br>1. Video/Audio to .wav form converted using ffmpeg in source_base_conversion.py file.
         <br>1.1 Basic Exceptions such as File not found handled.
@@ -24,11 +24,14 @@ Sixth Push :
       <br>18. Progress bar and loop handling
       <br>19. Retry files handling. 
       <br>20. Unrecognized files handling
+      <br>21. Print Unified at Label Update.
+      <br>22. NLP for Language Translation built.
 <br>Tasks to be done:
       <br>1. Integration.
-      <br>2. Male/Female versions for the audio files should be added.(Cannot be done. Voice not available)
-      <br>3. UI enhancements
-      <br>4. NLP Module building
-      <br>5. Add explaining comments in Program file
-      <br>6. Code Standardization
-      <br>7. Preprocessing for Noises
+      <br>2. UI enhancements
+      <br>3. Add explaining comments in Program file
+      <br>4. Code Standardization
+      <br>5. Preprocessing for Noises
+      <br>6. Image Support.
+      <br>7. PDF Support.
+      <br>8. Spell Check.

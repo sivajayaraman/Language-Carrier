@@ -29,6 +29,7 @@ def clearFiles():
 
 def updateDisplayLabel(displayString,sleepTime):
     try:
+        print(displayString)
         label.config(font=("Courier",20))
         displayLabel.set(displayString)
         root.update()
@@ -42,19 +43,15 @@ def textToOtherLanguage(root):
         root.title("Audio Development")
         root.update()
         root.deiconify()
-        print("Audio Development Initiated")
         progress['value'] = 10
         updateDisplayLabel("Audio Development Initiated",1)
         try:
             os.mkdir('translated_audio')
         except(FileExistsError):
             pass
-        print("Reading the translated text file....")
         updateDisplayLabel("Reading the translated text file....",1.5)
         translatedText = open("translatedText.txt","r")
-        print("translated_audio directory created and home directory changed to translated_audio directory .....")
         os.chdir('translated_audio')
-        print("Reading translated text from translatedText.txt")
         audioMerge = AudioSegment.silent(1000)
         data = translatedText.readlines()
         size = len(data)
@@ -64,7 +61,6 @@ def textToOtherLanguage(root):
         i = 1
         for line in data:
             updateDisplayLabel("Develping audio for line " + str(i) + " --- "+ time.ctime(),0)
-            print("Develping audio for line " + str(i) + " --- "+ time.ctime())
             audio = gTTS(text=line, lang="ta", slow=False)
             filename = "translated_" + str(i) + ".mp3"
             audio.save(filename)
@@ -75,11 +71,8 @@ def textToOtherLanguage(root):
             root.update_idletasks()
         translatedText.close()
         path = os.getcwd()
-        print("Audio chunks developed succesfully --- " + time.ctime())
         updateDisplayLabel("Audio chunks developed succesfully --- " + time.ctime(),2)
-        print("Audio translated and stored in location\n "  + path)
         updateDisplayLabel("Audio translated and stored in location\n "  + path ,2)
-        print("Audio Files Merging Initiated")
         progress['value'] = 50
         updateDisplayLabel("Audio Files Merging Initiated",2)
         size = i - 1
@@ -89,7 +82,6 @@ def textToOtherLanguage(root):
         i = 1
         for filename in glob.glob(os.path.join(path,"*.mp3")):
             updateDisplayLabel("Merging Audio File translated_" +str(i) + ".mp3 --- " + time.ctime(),2)
-            print("Merging Audio File translated_" +str(i) + ".mp3 --- " + time.ctime())
             audio = AudioSegment.from_mp3(filename)
             audioMerge = audioMerge + audio
             i = i + 1
@@ -100,7 +92,6 @@ def textToOtherLanguage(root):
         os.chdir('..')
         path = os.getcwd()
         audioMerge.export(path+"/translatedAudio.mp3", format='mp3')
-        print("Audio translated and stored in location " + path )
         progress['value'] = 100
         root.update_idletasks()
         tkinter.messagebox.showinfo("Audio Development Success","Audio successfully developed from the text")
@@ -118,7 +109,6 @@ def translateText(root):
         translator = Translator()
         translatedTextFile = open("translatedText.txt","+w")
         updateDisplayLabel("Reading Source text from file",2)
-        print("Reading Recognized Text from file....")
         path = current_directory + "/recognized.txt"
         recognized = open(path,"r")
         data = recognized.readlines()
@@ -130,7 +120,6 @@ def translateText(root):
         progressValue = 10
         i = 1
         for line in data:
-            print("Translating line " + str(i) + " --- " + time.ctime())
             updateDisplayLabel("Translating line " + str(i) + " --- " + time.ctime(), 1)
             translatedData = translator.translate(line.strip(), src = 'en', dest = 'ta')
             data = translatedData.text
@@ -144,7 +133,6 @@ def translateText(root):
         translatedTextFile.close()
         progress['value'] = 80
         updateDisplayLabel("Translation Completed",1.5)
-        print("Done Translating....")
         createAudio = tkinter.messagebox.askyesno("Audio Developement","Do you want to develop audio for this translation?", icon = "info")
         if createAudio == True:
             updateDisplayLabel("Initiating Audio Development",1)
@@ -156,7 +144,6 @@ def translateText(root):
         progress['value'] = 100
         updateDisplayLabel("Translated text file is stored at location\n" + current_directory + "/translatedText.txt",2)
         tkinter.messagebox.showinfo("Translation Success","Text translated successfully")
-        print("Translated text file is stored at location " + current_directory + "/translatedText.txt ")
         root.destroy()
     except:
         try:
@@ -171,19 +158,15 @@ def audioToText(root):
         root.title("Audio To Text Conversion")
         progress['value'] = 10
         path = os.getcwd()
-        print("Resource file fetched and Audio extracted successfully....")
         progress['value'] = 20
         updateDisplayLabel("Resource file fetched and Audio extracted successfully....",1)
-        print("Extracted Audio is stored at " + path + " as audio.wav file....")
         progress['value'] = 30
         updateDisplayLabel("Extracted Audio is stored at " + path + " as audio.wav file....",1)
-        print("Executing Audio to Text Conversion.....")
         progress['value'] = 40
         updateDisplayLabel("Executing Audio to Text Conversion",1)
         root.withdraw()
         command = "python3 source_translation.py"
         subprocess.call(command, shell=True)
-        print("Process Completed....")
         progress['value'] = 100
         updateDisplayLabel("Process Completed",2)
         tkinter.messagebox.showinfo("Translation Successful","Translation has been Sucessfully completed!")
@@ -198,7 +181,6 @@ try:
     root.withdraw()
 
     locationPath = filedialog.askopenfilename(initialdir=current_directory,title='Language Carrier',filetypes=(('text files','*.txt'),('video files','*.mp4'),('audio files','*.mp3'),('wav file','*.wav'),('all files','*.*'))) 
-    print ("The selected file path is " + locationPath)
     root.update()
     root.title("Language Carrier")
     root.deiconify()
@@ -267,12 +249,10 @@ try:
             progress = tkinter.ttk.Progressbar(root, orient = tkinter.HORIZONTAL, length = 800, mode = "determinate")
             progress.pack()
             textFile = open(locationPath,"r")
-            print("File Fetched --- " + time.ctime())
             progress['value'] = 10
-            updateDisplayLabel("File Fetched",1.5)
-            print("Reading File Contents --- " + time.ctime())
+            updateDisplayLabel("File Fetched --- " + time.ctime(),1.5)
             progress['value'] = 20
-            updateDisplayLabel("Reading File Content...",1.5)
+            updateDisplayLabel("Reading File Content --- " + time.ctime(),1.5)
             data = textFile.readlines()
             size = len(data)
             progressValue = 20
@@ -281,7 +261,6 @@ try:
             fileSentence = ""
             i = 1
             for line in data:
-                print("Read Line "+ str(i) + " --- " + time.ctime())
                 updateDisplayLabel("Read Line "+ str(i) + " --- " + time.ctime(), 1)
                 fileSentence = fileSentence + line
                 i = i + 1    
@@ -291,7 +270,6 @@ try:
             recognizedText = open("recognized.txt","+w")
             fileSentence = fileSentence.strip() + '. '
             sentences = re.split(r'[.?!][.?!\s]+', fileSentence)
-            print("Updating recognized.txt --- " + time.ctime())
             progress['value'] = 60
             updateDisplayLabel("Updating recognized.txt --- " + time.ctime(),1.5 )
             size = len(sentences)
@@ -300,7 +278,6 @@ try:
             increment = int(increment)
             i = 0
             for line in sentences:
-                print("Writing Line "+ str(i) + " --- " +time.ctime())
                 updateDisplayLabel("Writing Line "+ str(i) + " --- " +time.ctime(),1)
                 recognizedText.write(line+"\n")
                 i = i + 1
@@ -308,13 +285,11 @@ try:
                 progress['value'] = progressValue
                 root.update_idletasks()
             recognizedText.close()    
-            print("Writing Text File Completed --- " + time.ctime())
             progress['value'] = 95
             updateDisplayLabel("Writing Text File Completed --- " + time.ctime(), 0)
             progress['value'] = 100
             root.update_idletasks()
             tkinter.messagebox.showinfo("Text Conversion","Text file converted for translation Successfully!")
-            print("Initiating Text Translation --- " + time.ctime() )
             progress['value'] = 0
             updateDisplayLabel("Initiating Text Translation",1.5)
             translateText(root)

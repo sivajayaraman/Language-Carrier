@@ -16,6 +16,7 @@ from gtts import gTTS
 def updateDisplayLabel(displayString,sleepTime):
 	try:
 		label.config(font=("Courier",20))
+		print (displayString)
 		displayLabel.set(displayString)
 		root.update()
 		root.update_idletasks()
@@ -42,21 +43,17 @@ def textToOtherLanguage():
 		cancel.pack()
 		root.update()
 		progress['value'] = 10
-		print("Audio Development Initiated --- " + time.ctime() )
 		updateDisplayLabel("Audio Development Initiated",2)
 		try:
 			os.mkdir('translated_audio')
 		except(FileExistsError):
 			pass
-		print("Reading the translated text file....")
 		updateDisplayLabel("Reading the translated text file....",1.5)
 		translatedText = open("translatedText.txt","r")
 		progress['value'] = 12
-		print("translated_audio directory created and home directory changed to translated_audio directory .....")
 		updateDisplayLabel("translated_audio directory created and\n home directory changed to translated_audio directory",1.5)
 		os.chdir('translated_audio')
 		progress['value'] = 15
-		print("Reading translated text from translatedText.txt")
 		updateDisplayLabel("Reading translated text from translatedText.txt",1)
 		audioMerge = AudioSegment.silent(500)
 		data = translatedText.readlines()
@@ -67,7 +64,6 @@ def textToOtherLanguage():
 		i = 1
 		for line in data:
 			updateDisplayLabel("Developing audio for line " + str(i) + "\n--- "+ time.ctime(),0)
-			print("Devoloping audio for line " + str(i) + " --- " + time.ctime())
 			audio = gTTS(text=line, lang="ta", slow=False) 
 			filename = "translated_" + str(i) + ".mp3"
 			audio.save(filename) 
@@ -79,11 +75,8 @@ def textToOtherLanguage():
 		translatedText.close()
 		path = os.getcwd()
 		progress['value'] = 50
-		print("Audio chunks developed succesfully --- " + time.ctime())
 		updateDisplayLabel("Audio chunks developed succesfully --- " + time.ctime(),1.5)
-		print("Audio translated and stored in location\n" + path + "/translated_audio")
 		updateDisplayLabel("Audio translated and stored in location\n" + path + "/translated_audio",1.5)
-		print("Audio Files Merging Initiated")
 		updateDisplayLabel("Audio Files Merging Initiated",1.5)
 		size = i - 1
 		progressValue = 50
@@ -92,20 +85,17 @@ def textToOtherLanguage():
 		i = 1
 		for filename in glob.glob(os.path.join(path,"*.mp3")):
 			updateDisplayLabel("Merging Audio File translated_" +str(i) + ".mp3 \n--- " + time.ctime(),1)
-			print("Merging Audio File translated_" +str(i) + ".mp3 --- " + time.ctime())
 			audio = AudioSegment.from_mp3(filename)
 			audioMerge = audioMerge + audio
 			i = i + 1    
 			progressValue = progressValue + increment
 			progress['value'] = progressValue
 			root.update_idletasks()
-		print("Audio files merged and stored at location \n" + os.getcwd() + " --- " + time.ctime())
 		updateDisplayLabel("Audio files merged and stored at location \n" + os.getcwd() + " --- " + time.ctime(),1)    
 		os.chdir('..')
 		path = os.getcwd()
 		audioMerge.export(path+"/translatedAudio.mp3", format='mp3')
 		progress['value'] = 100
-		print("Audio translated and stored in location " + path )
 		updateDisplayLabel("Audio translated and stored in location " + path, 1.5)
 		tkinter.messagebox.showinfo("Audio Development Success","Audio successfully developed from the text")
 		root.destroy()
@@ -130,7 +120,6 @@ def translateText():
 		translatedTextFile = open("translatedText.txt","+w")
 		progress['value'] = 20
 		updateDisplayLabel("Reading Recognized Text from file",1.5)
-		print("Reading Recognized Text from file....")
 		recognized = open("recognized.txt","r")
 		data = recognized.readlines()
 		size = len(data)
@@ -140,25 +129,21 @@ def translateText():
 		i = 1
 		for line in data:
 			updateDisplayLabel("Translating line " + str(i) +" --- "+ time.ctime(),1.5)
-			print("Translating line " + str(i) +" ---  "+ time.ctime())
 			translatedData = translator.translate(line.strip(), src = 'en', dest = 'ta')
 			data = translatedData.text
 			if len(data) != 0:  
 				translatedTextFile.write(data+"\n")
 				updateDisplayLabel("Line translated --- " + time.ctime(),1.5)
-			print("Line translated ---" + time.ctime())
 			progressValue = progressValue + increment
 			progress['value'] = progressValue
 			i = i + 1
 		progress['value'] = 90
 		updateDisplayLabel("Translation Completed",1.5)
-		print("Done Translating....")
 		progress['value'] = 95
 		updateDisplayLabel("Translated text file is stored at location\n" + path + "/translatedText.txt",1.5)
 		tkinter.messagebox.showinfo("Translation Success","Text translated successfully")
 		progress['value'] = 100
 		updateDisplayLabel("Initiating Audio Conversion",1)
-		print("Translated text file is stored at location" + path + "/translatedText.txt")
 		root.destroy()
 	except:
 		try:
@@ -179,19 +164,15 @@ def silence_based_conversion():
 		path = os.getcwd()
 		progress['value'] = 10 
 		updateDisplayLabel("Source Location " + path + "/audio.wav", 1.5 )
-		print("Souce Location : " + path + "/audio.wav" )
 		
 		clearFiles()
 		audio = AudioSegment.from_wav(path + "/audio.wav")
 		recognized = open("recognized.txt","w+")
 		unrecognized = open("unrecognized.txt","w+")
 		retry = open("retry.txt","w+")
-		print("Audio fetched and preparing to split.... Splitting Chunks.....")
-		print("This may take a while.....")
 		progress['value'] = 20
 		updateDisplayLabel("Splitting the Audio into chunks \n This may take a while...",1.5)
 		chunks = split_on_silence(audio, min_silence_len = 750, silence_thresh = -30)
-		print("Audio chunks successfully splitted .....")
 		updateDisplayLabel("Audio chunks successfully splitted", 1.5)
 		size = len(chunks)
 		progressValue = 20
@@ -202,7 +183,6 @@ def silence_based_conversion():
 		except(FileExistsError):
 			pass
 		
-		print("audio_chunks directory created and home directory changed to audio_chunks .....")
 		updateDisplayLabel("audio_chunks directory created and\n home directory changed to audio_chunks",1)
 		os.chdir('audio_chunks')
 		i = 0
@@ -210,13 +190,10 @@ def silence_based_conversion():
 			root.update()
 			chunk_silent = AudioSegment.silent(duration = 100)	
 			audio_chunk = chunk_silent + chunk + chunk_silent
-			#audio_chunk = audio_chunk._spawn(audio_chunk.raw_data, overrides={"frame_rate": int(audio_chunk.frame_rate * 0.90)})
 			updateDisplayLabel("Saving chunk{0}.wav --- ".format(i) + time.ctime(),0.75)
-			print("Saving chunk{0}.wav ---".format(i) + time.ctime())
 			audio_chunk.export("./chunk{0}.wav".format(i), bitrate = '192k', format = "wav")
 			filename = 'chunk' + str(i)+ '.wav'
-			print("Processing chunk " + str(i))
-			updateDisplayLabel("Processing chunk " + str(i)+"---"+ time.ctime(),0.75)
+			updateDisplayLabel("Processing chunk " + str(i)+" --- "+ time.ctime(),0.75)
 			file = filename
 			r = speech_recognition.Recognizer()
 
@@ -264,16 +241,12 @@ def silence_based_conversion():
 		unrecognized.close()
 		retry.close()
 		updateDisplayLabel("Total number of chunks processed : " + str(i),1)
-		print("Recognized text from audio file is stored at location " + path + "/recognized.txt")
 		updateDisplayLabel("Recognized text from audio file is stored at location\n" + path + "/recognized.txt",1.5)
-		print("Unrecognized audio chunks is stored at location " + path + "/unrecognized.txt")
 		updateDisplayLabel("Unrecognized audio chunks is stored at location\n " + path + "/unrecognized.txt",1.5)
-		print("Retry required audio chunks is stored at location " + path + "/retry.txt")
 		updateDisplayLabel("Retry required audio chunks is stored at location\n " + path + "/retry.txt",1.5)
 		progress['value'] = 100
 		root.update_idletasks()
 		tkinter.messagebox.showinfo("Audio Conversion Success", "Successfully converted Audio to Text")
-		print("Total number of chunks processed : " + str(i) )
 		os.chdir('..')
 		print("Returned to home directory.....")
 		if unrecognizedFile == True:
